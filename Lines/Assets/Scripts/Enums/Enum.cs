@@ -2,6 +2,7 @@ public enum GameState
 {
     StartGame,
     InGame,
+    BallMoving,
     GameOver
 }
 public enum BallState
@@ -12,4 +13,11 @@ public enum BallState
     Moving,
     Stop,
     Destroy
+}
+public enum BallType
+{
+    Normal,
+    Ghost,
+    Diagonal,
+    Bomb
 }

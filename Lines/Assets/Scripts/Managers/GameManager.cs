@@ -8,10 +8,14 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance {get; set;}
     [SerializeField] private SpawnManager spawnManager = null;
     [SerializeField] private GameState gameState;
+    [SerializeField] private int numberOfMatchedBalls = 5;
+    [SerializeField] private int numberOfColor;
     private Ball selectedBall = null;
     private Cell selectedCell = null;
     public GameState GetGameState() => gameState;
     public SpawnManager GetSpawnManager() => spawnManager;
+    public int GetNumberOfMatchBalls() => numberOfMatchedBalls;
+    public int GetNumberOfColor() => numberOfColor;
     public static event Action<GameState> OnGameStateUpdated;
     void Awake()
     {
@@ -23,13 +27,19 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // TODO: Load highscore from computer
+        ScoreManager.Instance.Score = 0;
+        ScoreManager.Instance.HighScore = 0;
+
         Ball.OnSelected += HandleBallSelected;
+        Ball.OnStopMoving += HandleBallStopMoving;
         Cell.OnSelected += HandleCellSelected;
         UpdateState(GameState.StartGame);
     }
     void OnDestroy()
     {
         Ball.OnSelected -= HandleBallSelected;
+        Ball.OnStopMoving -= HandleBallStopMoving;
         Cell.OnSelected -= HandleCellSelected;
     }
 
@@ -48,6 +58,9 @@ public class GameManager : MonoBehaviour
             case GameState.InGame:
                 HandleInGame();
                 break;
+            case GameState.BallMoving:
+                HandleBallMoving();
+                break;
             case GameState.GameOver:
                 HandleGameOver();
                 break;
@@ -58,6 +71,10 @@ public class GameManager : MonoBehaviour
         spawnManager.Spawn();
     }
     void HandleInGame()
+    {
+
+    }
+    void HandleBallMoving()
     {
 
     }
@@ -76,6 +93,10 @@ public class GameManager : MonoBehaviour
     }
     void HandleBallSelected(Ball ball)
     {
+        if (selectedBall != null)
+        {
+            selectedBall.UpdateState(BallState.Ready);
+        }
         selectedBall = ball;
     }
     void HandleCellSelected(Cell cell)
@@ -86,8 +107,19 @@ public class GameManager : MonoBehaviour
         }
         selectedCell = cell;
 
-        selectedBall.SetDestination(selectedCell);
+        selectedBall.DestinationCell = selectedCell;
         selectedBall.UpdateState(BallState.Moving);
         selectedBall = null;
+    }
+    void HandleBallStopMoving(Ball ball)
+    {
+        List<Cell> matchedCells = GridManager.Instance.Check(ball);
+        foreach (Cell matchedCell in matchedCells)
+        {
+            matchedCell.RemoveBall();
+        }
+        GridManager.Instance.UpdateBall();
+        UpdateState(GameState.InGame);
+        spawnManager.Spawn();
     }
 }

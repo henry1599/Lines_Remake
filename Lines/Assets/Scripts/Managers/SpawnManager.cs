@@ -1,15 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private Color[] ballColors = new Color[7];
-    [SerializeField] private Ball ballPrefab = null;
+    [SerializeField] private List<Color> ballColors = new List<Color>();
+    [SerializeField] private Ball[] ballPrefabs;
     private bool isAllowedToSpawn = false;
+    public event Action<List<Ball>> OnQueuedColors;
     void Start()
     {
         GridManager.OnEnoughSpaceToSpawn += HandleSpaceToSpawn;
+        ballColors = Shuffle(ballColors);
     }
     void OnDestroy()
     {
@@ -26,20 +30,22 @@ public class SpawnManager : MonoBehaviour
         {
             return;
         }
+        List<Ball> randomBalls = new List<Ball>();
         foreach (Cell emptyCell in emptyCells)
         {
             // TODO: Get a random color
-            Color randomColor = ballColors[UnityEngine.Random.Range(0, ballColors.Length)];
+            Color randomColor = ballColors[UnityEngine.Random.Range(0, Mathf.Min(ballColors.Count, GameManager.Instance.GetNumberOfColor()))];
 
             // TODO: Clear the cell
             Helper.DeletChildren(emptyCell.GetBallSlot());
 
             // TODO: Instantiate a ball instance
-            Ball ballInstance = Instantiate(ballPrefab, emptyCell.GetBallSlot());
+            Ball ballInstance = Instantiate(ballPrefabs[UnityEngine.Random.Range(0, ballPrefabs.Length)], emptyCell.GetBallSlot());
 
             // TODO: Init a ball
             ballInstance.Init(randomColor, emptyCell.GetLocalX(), emptyCell.GetLocalY(), emptyCell);
-
+            randomBalls.Add(ballInstance);
+            
             // TODO: If this function is called just after the game starts
             // TODO: make all balls to be Ready
             if (GameManager.Instance.GetGameState() == GameState.StartGame)
@@ -56,6 +62,13 @@ public class SpawnManager : MonoBehaviour
         {
             GameManager.Instance.UpdateState(GameState.InGame);
         }
+        OnQueuedColors?.Invoke(randomBalls);
+    }
+
+    private List<Color> Shuffle(List<Color> colorList)
+    {
+        System.Random rnd = new System.Random();
+        return colorList.OrderBy(item => rnd.Next()).ToList();
     }
     private void HandleSpaceToSpawn(bool isEnoughSpace) => isAllowedToSpawn = isEnoughSpace;
 }

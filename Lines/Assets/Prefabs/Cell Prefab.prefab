@@ -132,6 +132,7 @@ MonoBehaviour:
   ballSlot: {fileID: 6479123223309379257}
   localX: 0
   localY: 0
+  col2D: {fileID: -6166196529030637756}
   isFull: 0
 --- !u!61 &-6166196529030637756
 BoxCollider2D:
