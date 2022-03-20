@@ -9,6 +9,7 @@ public class CameraSetting : MonoBehaviour
     private Camera mainCamera;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float scaleSpeed;
+    [SerializeField] private Transform pauseEffect;
     private bool isLock = true;
     // Start is called before the first frame update
     void Start()
@@ -33,6 +34,8 @@ public class CameraSetting : MonoBehaviour
         float gridHeight = GridManager.Instance.GetGrid().GetHeight();
         float gridWidth = GridManager.Instance.GetGrid().GetWidth();
         float cellSize = GridManager.Instance.GetGrid().GetCellSize();
+        
+        pauseEffect.localScale = new Vector3(0.175f * gridWidth - 0.05f, 0.175f * gridWidth - 0.05f, 1);
 
         float desiredX = gridWidth % 2 == 0 ? (int)((gridWidth * cellSize) / 2) - 0.5f : (int)((gridWidth * cellSize) / 2);
         float desiredY = gridHeight % 2 == 0 ? (int)((gridWidth * cellSize) / 2) - 0.5f : (int)((gridHeight * cellSize) / 2);

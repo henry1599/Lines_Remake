@@ -10,8 +10,10 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private Ball[] ballPrefabs;
     private bool isAllowedToSpawn = false;
     public event Action<List<Ball>> OnQueuedColors;
+    private int queuedBallEachTurn;
     void Start()
     {
+        queuedBallEachTurn = SettingManager.Instance.ChosenLevel.queuedBallEachTurn;
         GridManager.OnEnoughSpaceToSpawn += HandleSpaceToSpawn;
         ballColors = Shuffle(ballColors);
     }
@@ -25,7 +27,11 @@ public class SpawnManager : MonoBehaviour
         {
             return;
         }
-        List<Cell> emptyCells = GridManager.Instance.GetRandomSpawnableCells(3);
+        if (GameManager.Instance.GetGameState() == GameState.Pausing)
+        {
+            return;
+        }
+        List<Cell> emptyCells = GridManager.Instance.GetRandomSpawnableCells(queuedBallEachTurn);
         if (!isAllowedToSpawn)
         {
             return;

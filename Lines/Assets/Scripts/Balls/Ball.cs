@@ -18,6 +18,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private ParticleSystem vfxTrail;
     [SerializeField] private ParticleSystem vfxExplore;
     [SerializeField] private ParticleSystem[] vfxSelected;
+    [SerializeField] private GameObject vfxCannotMove;
     private Coroutine MoveIE;
     private int localX;
     private int localY;
@@ -46,6 +47,8 @@ public class Ball : MonoBehaviour
     public Color GetBallColor() => spriteRenderer.color;
     public static event Action<Ball> OnSelected;
     public static event Action<Ball> OnStopMoving;
+    public static event Action<Ball> OnHover;
+    public static event Action OnExit;
     public void Init(Color color, int x, int y, Cell _currentCell)
     {
         spriteRenderer.color = color;
@@ -79,6 +82,10 @@ public class Ball : MonoBehaviour
     void Update()
     {
         if (GameManager.Instance.GetGameState() == GameState.GameOver)
+        {
+            return;
+        }
+        if (GameManager.Instance.GetGameState() == GameState.Pausing)
         {
             return;
         }
@@ -182,6 +189,11 @@ public class Ball : MonoBehaviour
         {
             ParticleSystem.MainModule mainExploreParticle = vfxExploreInstance.main;
             mainExploreParticle.startColor = spriteRenderer.color;
+            FindObjectOfType<AudioManager>().Play("Collect", false);
+        }
+        else
+        {
+            FindObjectOfType<AudioManager>().Play("Explosion", false);
         }
 
         if (type == BallType.Bomb)
@@ -222,6 +234,11 @@ public class Ball : MonoBehaviour
         {
             return;
         }
+        if (GameManager.Instance.GetGameState() == GameState.Pausing)
+        {
+            return;
+        }
+        FindObjectOfType<AudioManager>().Play("Choose Ball", false);
         // print("Ball Click !");
         OnSelected?.Invoke(this);
         if (ballState != BallState.Queued)
@@ -235,10 +252,16 @@ public class Ball : MonoBehaviour
         {
             return;
         }
+        if (GameManager.Instance.GetGameState() == GameState.Pausing)
+        {
+            return;
+        }
+        OnHover?.Invoke(this);
         glow.SetActive(true);
     }
     void OnMouseExit()
     {
+        OnExit?.Invoke();
         glow.SetActive(false);
     }
     IEnumerator MoveCoroutine()
@@ -259,5 +282,8 @@ public class Ball : MonoBehaviour
             yield return null;
         }
     }
-    void HandlePathFound(bool found) => pathFound = found;
+    void HandlePathFound(bool found)
+    {
+        pathFound = found;
+    } 
 }

@@ -6,23 +6,13 @@ using System;
 public class GridManager : MonoBehaviour
 {
     public static GridManager Instance {get; set;}
-    [SerializeField] private Transform centerPoint;
-    [SerializeField] private int width;
-    [SerializeField] private int height;
+    private int width;
+    private int height;
     [SerializeField] private float cellSize;
     [SerializeField] private Vector3 startGridPosition;
     [SerializeField] private Cell cellObject;
-    private int numberOfEmptyCell = 0;
     private Grid grid;
     public Grid GetGrid() => grid;
-    public int NumberOfEmptyCell
-    {
-        get { return numberOfEmptyCell;}
-        set
-        {
-            numberOfEmptyCell = value;
-        }
-    }
     public static event Action OnFinishInitGrid;
     public static event Action<bool> OnEnoughSpaceToSpawn;
     void Awake()
@@ -35,11 +25,8 @@ public class GridManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // float desiredX = width % 2 == 0 ? (int)((width * cellSize) / 2) - 0.5f : (int)((width * cellSize) / 2);
-        // float desiredY = height % 2 == 0 ? (int)((height * cellSize) / 2) - 0.5f : (int)((height * cellSize) / 2);
-        // Vector2 adjustDirection = (Vector2)centerPoint.position - new Vector2(desiredX, desiredY);
-        // startGridPosition = adjustDirection;
-
+        width = SettingManager.Instance.ChosenLevel.width;
+        height = SettingManager.Instance.ChosenLevel.height;
         InitGrid();
     }
     public void InitGrid()
@@ -53,7 +40,6 @@ public class GridManager : MonoBehaviour
                 grid.GetGridArray()[i, j].SetLocalPosition(i, j);
             }
         }
-        NumberOfEmptyCell = width * height;
         OnFinishInitGrid?.Invoke();
     }
     public List<Cell> GetRandomSpawnableCells(int numberOfRandomCells)
@@ -102,14 +88,25 @@ public class GridManager : MonoBehaviour
     public void UpdateBall()
     {
         List<Cell> result = new List<Cell>();
-        foreach (Cell cell in grid.GetGridArray())
+        for (int i = 0; i < grid.GetGridArray().GetLength(0); i++)
         {
-            if (cell.IsContainsBall() == true)
+            for (int j = 0; j < grid.GetGridArray().GetLength(1); j++)
             {
-                Ball ball = cell.GetBall();
-                if (ball.GetState() == BallState.Queued)
+                if (grid.GetGridArray()[i, j].IsContainQueuedBall(out Ball ball))
                 {
+                    if (grid.GetGridArray()[i, j].GetBallSlot().childCount > 0)
+                    {
+                        grid.GetGridArray()[i, j].IsFull = true;
+                    }
                     ball.UpdateState(BallState.Ready);
+                    if (ball.GetBallType() != BallType.Bomb)
+                    {
+                        List<Cell> matchedCells = Check(ball);
+                        foreach (Cell matchedCell in matchedCells)
+                        {
+                            matchedCell.RemoveBall();
+                        }
+                    }
                 }
             }
         }
@@ -210,11 +207,18 @@ public class GridManager : MonoBehaviour
             return resultBomb;
         }
         List<Cell> result = new List<Cell>();
+        Cell currentCell = ball.GetCurrentCell();
 
         result.AddRange(CheckHorizontal(ball));
         result.AddRange(CheckVertical(ball));
-        result.AddRange(CheckDiagonal(ball));
-
+        result.AddRange(CheckDiagonal1(ball));
+        result.AddRange(CheckDiagonal2(ball));
+        
+        if (result.Count == 0)
+        {
+            return result;
+        }
+        result.Add(currentCell);
         return result;
     }
     /// <summary>
@@ -231,7 +235,7 @@ public class GridManager : MonoBehaviour
         int matchedBalls = 0;
 
         // TODO: Go left
-        for (int i = currentCell.GetLocalX(); i >= 0; i--)
+        for (int i = currentCell.GetLocalX() - 1; i >= 0; i--)
         {
             if (!grid.GetGridArray()[i, currentCell.GetLocalY()].IsContainReadyBall(out Ball _ball))
             {
@@ -250,7 +254,7 @@ public class GridManager : MonoBehaviour
         }
 
         // TODO: Go right
-        for (int i = currentCell.GetLocalX(); i < width; i++)
+        for (int i = currentCell.GetLocalX() + 1; i < width; i++)
         {
             if (!grid.GetGridArray()[i, currentCell.GetLocalY()].IsContainReadyBall(out Ball _ball))
             {
@@ -270,9 +274,10 @@ public class GridManager : MonoBehaviour
         
         // ! Why +1
         // ! 'Cause in 2 for loop above, we count an addition ball (the ball from the param)
-        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() + 1)
+        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() - 1)
         {
             // print("Match horizontal");
+            // result.Add(currentCell);
             return result;
         }
         else
@@ -295,7 +300,7 @@ public class GridManager : MonoBehaviour
         int matchedBalls = 0;
 
         // TODO: Go left
-        for (int i = currentCell.GetLocalY(); i >= 0; i--)
+        for (int i = currentCell.GetLocalY() - 1; i >= 0; i--)
         {
             if (!grid.GetGridArray()[currentCell.GetLocalX(), i].IsContainReadyBall(out Ball _ball))
             {
@@ -314,7 +319,7 @@ public class GridManager : MonoBehaviour
         }
 
         // TODO: Go right
-        for (int i = currentCell.GetLocalY(); i < height; i++)
+        for (int i = currentCell.GetLocalY() + 1; i < height; i++)
         {
             if (!grid.GetGridArray()[currentCell.GetLocalX(), i].IsContainReadyBall(out Ball _ball))
             {
@@ -334,9 +339,10 @@ public class GridManager : MonoBehaviour
         
         // ! Why +1
         // ! 'Cause in 2 for loop above, we count an addition ball (the ball from the param)
-        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() + 1)
+        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() - 1)
         {
             // print("Match vertical");
+            // result.Add(currentCell);
             return result;
         }
         else
@@ -350,7 +356,7 @@ public class GridManager : MonoBehaviour
     /// </summary>
     /// <param name="ball"></param>
     /// <returns></returns>
-    public List<Cell> CheckDiagonal(Ball ball)
+    public List<Cell> CheckDiagonal1(Ball ball)
     {
         List<Cell> result = new List<Cell>();
 
@@ -359,7 +365,7 @@ public class GridManager : MonoBehaviour
         int matchedBalls = 0;
 
         // TODO: Go from bottom-left to top-right
-        for (int i = currentCell.GetLocalX(), j = currentCell.GetLocalY(); i >= 0 && j >= 0; i--, j--)
+        for (int i = currentCell.GetLocalX() - 1, j = currentCell.GetLocalY() - 1; i >= 0 && j >= 0; i--, j--)
         {
             if (!grid.GetGridArray()[i, j].IsContainReadyBall(out Ball _ball))
             {
@@ -376,7 +382,7 @@ public class GridManager : MonoBehaviour
             result.Add(grid.GetGridArray()[i, j]);
             matchedBalls++;
         }
-        for (int i = currentCell.GetLocalX(), j = currentCell.GetLocalY(); i < width && j < height; i++, j++)
+        for (int i = currentCell.GetLocalX() + 1, j = currentCell.GetLocalY() + 1; i < width && j < height; i++, j++)
         {
             if (!grid.GetGridArray()[i, j].IsContainReadyBall(out Ball _ball))
             {
@@ -393,10 +399,29 @@ public class GridManager : MonoBehaviour
             result.Add(grid.GetGridArray()[i, j]);
             matchedBalls++;
         }
+        // ! Why +3
+        // ! 'Cause in 4 for loop above, we count an addition ball (the ball from the param)
+        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() - 1)
+        {
+            // print("Match diagonal");
+            // result.Add(currentCell);
+            return result;
+        }
+        else
+        {
+            // print("Dont match diagonal");
+            return new List<Cell>();
+        }
+    }
+    public List<Cell> CheckDiagonal2(Ball ball)
+    {
+        List<Cell> result = new List<Cell>();
 
-
+        Cell currentCell = ball.GetCurrentCell();
+        Color ballColor = ball.GetBallColor();
+        int matchedBalls = 0;
         // TODO: Go from top-left to bottom-right
-        for (int i = currentCell.GetLocalX(), j = currentCell.GetLocalY(); i >= 0 && j < height; i--, j++)
+        for (int i = currentCell.GetLocalX() - 1, j = currentCell.GetLocalY() + 1; i >= 0 && j < height; i--, j++)
         {
             if (!grid.GetGridArray()[i, j].IsContainReadyBall(out Ball _ball))
             {
@@ -413,7 +438,7 @@ public class GridManager : MonoBehaviour
             result.Add(grid.GetGridArray()[i, j]);
             matchedBalls++;
         }
-        for (int i = currentCell.GetLocalX(), j = currentCell.GetLocalY(); i < width && j >= 0; i++, j--)
+        for (int i = currentCell.GetLocalX() + 1, j = currentCell.GetLocalY() - 1; i < width && j >= 0; i++, j--)
         {
             if (!grid.GetGridArray()[i, j].IsContainReadyBall(out Ball _ball))
             {
@@ -433,9 +458,10 @@ public class GridManager : MonoBehaviour
         
         // ! Why +3
         // ! 'Cause in 4 for loop above, we count an addition ball (the ball from the param)
-        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() + 3)
+        if (matchedBalls >= GameManager.Instance.GetNumberOfMatchBalls() - 1)
         {
             // print("Match diagonal");
+            // result.Add(currentCell);
             return result;
         }
         else
@@ -443,5 +469,20 @@ public class GridManager : MonoBehaviour
             // print("Dont match diagonal");
             return new List<Cell>();
         }
+    }
+    public List<Ball> GetAllUpdatedBall()
+    {
+        List<Ball> result = new List<Ball>();
+        for (int i = 0; i < grid.GetGridArray().GetLength(0); i++)
+        {
+            for (int j = 0; j < grid.GetGridArray().GetLength(1); j++)
+            {
+                if (grid.GetGridArray()[i, j].IsContainQueuedBall(out Ball _ball) == true)
+                {
+                    result.Add(_ball);
+                }
+            }
+        }
+        return result;
     }
 }

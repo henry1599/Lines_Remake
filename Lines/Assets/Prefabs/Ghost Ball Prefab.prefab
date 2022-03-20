@@ -227,6 +227,7 @@ MonoBehaviour:
   vfxSelected:
   - {fileID: 2062269807597942452}
   - {fileID: 5710768708680757273}
+  vfxCannotMove: {fileID: 759133620209971804, guid: 0987212b3232d3240a4a31dfd498f1eb, type: 3}
 --- !u!58 &2447128322909919765
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -438,7 +439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2731855962924147554, guid: 1aea22fb971a81f4b9a5f26b56bb3126, type: 3}
       propertyPath: UVModule.enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2731855962924147554, guid: 1aea22fb971a81f4b9a5f26b56bb3126, type: 3}
       propertyPath: RotationModule.enabled
@@ -489,6 +490,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2731855962924147554, guid: 1aea22fb971a81f4b9a5f26b56bb3126, type: 3}
+      propertyPath: UVModule.sprites.Array.data[0].sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 12a042298cc142145afa7c29a82bc5c5, type: 3}
+    - target: {fileID: 2731855962924147554, guid: 1aea22fb971a81f4b9a5f26b56bb3126, type: 3}
       propertyPath: EmissionModule.rateOverDistance.scalar
       value: 3
       objectReference: {fileID: 0}
@@ -511,7 +516,7 @@ PrefabInstance:
     - target: {fileID: 2921647626630568233, guid: 1aea22fb971a81f4b9a5f26b56bb3126, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 24c8b679c66c15248a42885dddffc9e5, type: 2}
+      objectReference: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 3672144361012272894, guid: 1aea22fb971a81f4b9a5f26b56bb3126, type: 3}
       propertyPath: m_RootOrder
       value: 2

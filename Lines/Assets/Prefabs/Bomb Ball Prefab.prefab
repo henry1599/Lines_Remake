@@ -310,6 +310,7 @@ MonoBehaviour:
   vfxSelected:
   - {fileID: 797317037151598975}
   - {fileID: 6399259973192253394}
+  vfxCannotMove: {fileID: 759133620209971804, guid: 0987212b3232d3240a4a31dfd498f1eb, type: 3}
 --- !u!58 &8367668630931017434
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -5,7 +5,9 @@ using UnityEngine;
 public class GameDisplayManager : MonoBehaviour
 {
     public static GameDisplayManager Instance {get; set;}
-    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameOverDisplay gameOverPanel;
+    [SerializeField] private ScoreManager scoreManager;
+    [SerializeField] private TimeManager timeManager;
     void Awake() 
     {
         Instance = this;
@@ -15,17 +17,18 @@ public class GameDisplayManager : MonoBehaviour
     {
         GameManager.OnGameStateUpdated -= HandleGameStateUpdated;
     }
-    void HandleGameStateUpdated(GameState gameState)
+    void HandleGameStateUpdated(GameState gameState, PlayerData playerData)
     {
-        gameOverPanel.SetActive(gameState == GameState.GameOver);
         switch (gameState)
         {
             case GameState.StartGame:
                 break;
             case GameState.InGame:
                 break;
-            case GameState.GameOver:
+            case GameState.GameOver:  
+                gameOverPanel.Setup(scoreManager.Score, playerData.highScore, timeManager.Timer);
                 break;
         }   
+        gameOverPanel.Show(gameState == GameState.GameOver);
     }
 }

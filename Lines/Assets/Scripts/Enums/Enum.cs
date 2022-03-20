@@ -3,7 +3,8 @@ public enum GameState
     StartGame,
     InGame,
     BallMoving,
-    GameOver
+    GameOver,
+    Pausing
 }
 public enum BallState
 {
@@ -20,4 +21,11 @@ public enum BallType
     Ghost,
     Diagonal,
     Bomb
+}
+public enum GameLevel
+{
+    Easy,
+    Medium,
+    Hard,
+    Impossible
 }

@@ -18,16 +18,7 @@ public class TimerDisplay : MonoBehaviour
     }
     void HandleTimeChanged(float time)
     {
-        Tuple<int, int, int> splitedTime = SplitFloatToTime(time);
-        int hour = splitedTime.Item1;
-        int minute = splitedTime.Item2;
-        int second = splitedTime.Item3;
-
-        string hourString = hour > 10 ? hour.ToString() : $"0{hour}";
-        string minuteString = minute > 10 ? minute.ToString() : $"0{minute}";
-        string secondString = second > 10 ? second.ToString() : $"0{second}";
-        
-        timeText.text = $"{hourString}:{minuteString}:{secondString}";
+        timeText.text = GetTimeString(time);
     }
     Tuple<int, int, int> SplitFloatToTime(float _timer)
     {
@@ -38,5 +29,18 @@ public class TimerDisplay : MonoBehaviour
         int second = timerInt - hour * 3600 - minute * 60;
 
         return new Tuple<int, int, int>(hour, minute, second);
+    }
+    public string GetTimeString(float time)
+    {
+        Tuple<int, int, int> splitedTime = SplitFloatToTime(time);
+        int hour = splitedTime.Item1;
+        int minute = splitedTime.Item2;
+        int second = splitedTime.Item3;
+
+        string hourString = hour > 10 ? hour.ToString() : $"0{hour}";
+        string minuteString = minute > 10 ? minute.ToString() : $"0{minute}";
+        string secondString = second > 10 ? second.ToString() : $"0{second}";
+
+        return $"{hourString}:{minuteString}:{secondString}";
     }
 }

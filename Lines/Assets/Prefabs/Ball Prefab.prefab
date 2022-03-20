@@ -132,9 +132,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 6511253651669482128}
+  graphic: {fileID: 0}
   ballState: 0
   col2D: {fileID: 2371582912338510122}
   glow: {fileID: 9088060079133521287}
+  type: 0
   pathFinding: {fileID: 4121481665333780615, guid: 268048fd7ab5cc4439691ec2d8a18de9, type: 3}
   anim: {fileID: 258126276372853397}
   moveSpeed: 15
@@ -143,6 +145,7 @@ MonoBehaviour:
   vfxSelected:
   - {fileID: 7739231426364331887}
   - {fileID: 4087398668599693762}
+  vfxCannotMove: {fileID: 759133620209971804, guid: 0987212b3232d3240a4a31dfd498f1eb, type: 3}
 --- !u!58 &2371582912338510122
 CircleCollider2D:
   m_ObjectHideFlags: 0

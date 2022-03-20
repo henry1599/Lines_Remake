@@ -36,6 +36,7 @@ public class ScoreManager : MonoBehaviour
         {
             highScore = value;
             highScoreAnim.SetTrigger("changed");
+            OnScoreUpdated?.Invoke(score, highScore);
         }
     }
 }

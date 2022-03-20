@@ -6,11 +6,20 @@ using UnityEngine.UI;
 public class QueueBallDisplay : MonoBehaviour
 {
     [SerializeField] private SpawnManager spawnManager;
-    [SerializeField] private List<Image> queuedBallImages = new List<Image>();
-    [SerializeField] private List<Image> queuedBallGraphics = new List<Image>();
+    [SerializeField] private Transform layout;
+    [SerializeField] private QueuedBall queuedBallImagePrefab = null;
+    private List<QueuedBall> queuedBallImages = new List<QueuedBall>();
     void Awake()
     {
         spawnManager.OnQueuedColors += HandleQueuedColors;    
+    }
+    void Start()
+    {
+        for (int i = 0; i < SettingManager.Instance.ChosenLevel.queuedBallEachTurn; i++)
+        {
+            QueuedBall queuedBallImagePrefabInstance = Instantiate(queuedBallImagePrefab, layout).gameObject.GetComponent<QueuedBall>();
+            queuedBallImages.Add(queuedBallImagePrefabInstance);
+        }
     }
     void OnDestroy()
     {
@@ -18,26 +27,10 @@ public class QueueBallDisplay : MonoBehaviour
     }
     void HandleQueuedColors(List<Ball> balls)
     {
+        // print(balls.Count);
         for (int i = 0; i < balls.Count; i ++)
         {
-            queuedBallImages[i].color = balls[i].GetSpriteRenderer().color;
-            if (balls[i].GetGraphic() != null)
-            {
-                queuedBallGraphics[i].sprite = balls[i].GetGraphic().sprite;
-                switch (balls[i].GetBallType())
-                {
-                    case BallType.Normal:
-                        queuedBallGraphics[i].GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
-                        break;
-                    case BallType.Ghost:
-                    case BallType.Diagonal:
-                        queuedBallGraphics[i].GetComponent<RectTransform>().sizeDelta = new Vector2(50, 50);
-                        break;
-                    case BallType.Bomb:
-                        queuedBallGraphics[i].GetComponent<RectTransform>().sizeDelta = new Vector2(75, 75);
-                        break;
-                }
-            }
+            queuedBallImages[i].Setup(balls[i]);
         }
     }
 }

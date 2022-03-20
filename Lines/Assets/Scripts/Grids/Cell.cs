@@ -75,10 +75,6 @@ public class Cell : MonoBehaviour
     {
         return IsFull == false;
     }
-    public bool IsContainsBall()
-    {
-        return IsFull == true;
-    }
     public bool IsContainReadyBall(out Ball _ball)
     {
         if (IsFull == false)
@@ -87,6 +83,21 @@ public class Cell : MonoBehaviour
             return false;
         }
         if (ball.GetState() == BallState.Queued)
+        {
+            _ball = null;
+            return false;
+        }
+        _ball = ball;
+        return true;
+    }
+    public bool IsContainQueuedBall(out Ball _ball)
+    {
+        if (IsFull == false)
+        {
+            _ball = null;
+            return false;
+        }
+        if (ball.GetState() != BallState.Queued)
         {
             _ball = null;
             return false;
@@ -127,7 +138,6 @@ public class Cell : MonoBehaviour
         {
             col2D.enabled = false;
         }
-        GridManager.Instance.NumberOfEmptyCell--;
     }
     public void SetNewBallSlot(Ball _ball)
     {
@@ -142,20 +152,19 @@ public class Cell : MonoBehaviour
         {
             col2D.enabled = false;
         }
-        GridManager.Instance.NumberOfEmptyCell--;
     }
     public void UnSetBallSlot()
     {
         ball = null;
         IsFull = false;
         col2D.enabled = true;
-        GridManager.Instance.NumberOfEmptyCell++;
     }
     public void RemoveBall()
     {
         IsFull = false;
         col2D.enabled = true;
         ball.UpdateState(BallState.Destroy);
+        ball = null;
         // Helper.DeletChildren(ballSlot);
     }
     void OnMouseDown()
@@ -165,6 +174,10 @@ public class Cell : MonoBehaviour
             return;
         }
         if (GameManager.Instance.GetGameState() == GameState.BallMoving)
+        {
+            return;
+        }
+        if (GameManager.Instance.GetGameState() == GameState.Pausing)
         {
             return;
         }

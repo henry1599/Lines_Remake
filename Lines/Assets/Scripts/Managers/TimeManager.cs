@@ -37,8 +37,9 @@ public class TimeManager : MonoBehaviour
             return;
         }
         Timer += Time.deltaTime;
+        Timer = Mathf.Clamp(Timer, 0, maxGameTime);
     }
-    void HandleGameStateUpdated(GameState state)
+    void HandleGameStateUpdated(GameState state, PlayerData playerData)
     {
         isLock = state != GameState.InGame;
     }
