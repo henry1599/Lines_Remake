@@ -8,6 +8,7 @@ public class Buttons : MonoBehaviour
 {
     [SerializeField] private ScoreManager scoreManager;
     [SerializeField] private TimeManager timeManager;
+    [SerializeField] private CustomInspectorDisplay customInspectorDisplay;
     [SerializeField] private GameObject landingPage;
     [SerializeField] private GameObject chooseLevelPage;
     [SerializeField] private Animator animTitleText;
@@ -27,6 +28,7 @@ public class Buttons : MonoBehaviour
             return;
         }
         SaveSystem.SavePlayer(scoreManager, timeManager);
+        GameManager.Instance.IsMute = false;
         FindObjectOfType<AudioManager>().ForceStopAll();
         FindObjectOfType<LevelLoader>().LoadLevelByName("Home");
     }
@@ -95,5 +97,23 @@ public class Buttons : MonoBehaviour
             OnAudioButtonClick?.Invoke("OFF");
         }
         GameManager.Instance.IsMute = !GameManager.Instance.IsMute;
+    }
+    public void OnStartCustomGameButtonClick()
+    {
+        int width = int.Parse(customInspectorDisplay.InputWidth.text);
+        int height = int.Parse(customInspectorDisplay.InputHeight.text);
+        int numberOfColors = int.Parse(customInspectorDisplay.InputNumberOfColors.text);
+        int ballsEachColor = int.Parse(customInspectorDisplay.InputBallsEachTurn.text);
+        int ballsToCollect = int.Parse(customInspectorDisplay.InputBallsToCollect.text);
+
+        width = Mathf.Clamp(width, 6, 30);
+        height = Mathf.Clamp(height, 6, 30);
+        numberOfColors = Mathf.Clamp(numberOfColors, 1, 7);
+        ballsEachColor = Mathf.Clamp(ballsEachColor, 1, 12);
+        ballsToCollect = Mathf.Clamp(ballsToCollect, 2, 7);
+
+        SettingManager.Instance.GetLevels()[4] = new Level(GameLevel.Custom, width, height, numberOfColors, ballsEachColor, ballsToCollect);
+        SettingManager.Instance.SetLevel(4);
+        FindObjectOfType<LevelLoader>().LoadLevelByName("Gameplay");
     }
 }

@@ -5,8 +5,9 @@ using UnityEngine;
 public class SettingManager : MonoBehaviour
 {
     public static SettingManager Instance {get; set;}
-    [SerializeField] private Level[] levels = new Level[4];
+    [SerializeField] private Level[] levels = new Level[5];
     private Level chosenLevel = null;
+    public Level[] GetLevels() => levels;
     public Level ChosenLevel 
     {
         get {return chosenLevel;}
@@ -14,7 +15,15 @@ public class SettingManager : MonoBehaviour
     }
     void Awake()
     {
-        Instance = this;
+        DontDestroyOnLoad(this);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     // Start is called before the first frame update
     void Start()

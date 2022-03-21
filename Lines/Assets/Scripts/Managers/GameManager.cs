@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private ScoreManager scoreManager = null;
     [SerializeField] private TimeManager timeManager = null;
     [SerializeField] private GameState gameState;
-    [SerializeField] private int numberOfMatchedBalls = 5;
+    private int numberOfMatchedBalls;
     private bool isMute = false;
     public bool IsMute
     {
@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        numberOfMatchedBalls = SettingManager.Instance.ChosenLevel.ballsToCollect;
         numberOfColor = SettingManager.Instance.ChosenLevel.colorAmount;
         // TODO: Load highscore from computer
         playerData = SaveSystem.LoadPlayer();

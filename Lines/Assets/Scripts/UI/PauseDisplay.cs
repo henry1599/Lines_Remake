@@ -19,6 +19,6 @@ public class PauseDisplay : MonoBehaviour
     void HandleGameStateUpdated(GameState state, PlayerData playerData)
     {
         anim.SetBool("pause", state == GameState.Pausing);
-        pauseText.text = state == GameState.Pausing ? "CONTINUE" : "PAUSE";
+        pauseText.text = state == GameState.Pausing ? "RESUME" : "PAUSE";
     }
 }

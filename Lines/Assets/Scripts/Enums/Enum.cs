@@ -27,5 +27,6 @@ public enum GameLevel
     Easy,
     Medium,
     Hard,
-    Impossible
+    Impossible,
+    Custom
 }

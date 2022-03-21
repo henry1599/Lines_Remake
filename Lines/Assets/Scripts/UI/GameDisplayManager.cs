@@ -26,7 +26,7 @@ public class GameDisplayManager : MonoBehaviour
             case GameState.InGame:
                 break;
             case GameState.GameOver:  
-                gameOverPanel.Setup(scoreManager.Score, playerData.highScore, timeManager.Timer);
+                gameOverPanel.Setup(scoreManager.Score, scoreManager.HighScore, timeManager.Timer);
                 break;
         }   
         gameOverPanel.Show(gameState == GameState.GameOver);

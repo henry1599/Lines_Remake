@@ -35,10 +35,10 @@ public class CameraSetting : MonoBehaviour
         float gridWidth = GridManager.Instance.GetGrid().GetWidth();
         float cellSize = GridManager.Instance.GetGrid().GetCellSize();
         
-        pauseEffect.localScale = new Vector3(0.175f * gridWidth - 0.05f, 0.175f * gridWidth - 0.05f, 1);
+        pauseEffect.localScale = new Vector3(0.175f * gridWidth - 0.05f, 0.175f * gridHeight - 0.05f, 1);
 
         float desiredX = gridWidth % 2 == 0 ? (int)((gridWidth * cellSize) / 2) - 0.5f : (int)((gridWidth * cellSize) / 2);
-        float desiredY = gridHeight % 2 == 0 ? (int)((gridWidth * cellSize) / 2) - 0.5f : (int)((gridHeight * cellSize) / 2);
+        float desiredY = gridHeight % 2 == 0 ? (int)((gridHeight * cellSize) / 2) - 0.5f : (int)((gridHeight * cellSize) / 2);
         
         desiredPosition = new Vector3(desiredX, desiredY, -10);
         desiredSize = Mathf.Max(gridHeight, gridWidth) / 2 + 1;

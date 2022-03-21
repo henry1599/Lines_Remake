@@ -46,25 +46,36 @@ MonoBehaviour:
   sounds:
   - name: Theme
     clip: {fileID: 8300000, guid: fbf28f2ceabf7f741941ad551150f85c, type: 3}
+    previousVolume: 0
     volume: 0.8
     pitch: 1
     source: {fileID: 0}
     loop: 1
   - name: Choose Ball
     clip: {fileID: 8300000, guid: 177c424b3a52cb44fac79aece97675a8, type: 3}
+    previousVolume: 0
     volume: 0.8
     pitch: 1
     source: {fileID: 0}
     loop: 0
   - name: Explosion
     clip: {fileID: 8300000, guid: 50c839ac21ed28b4cb59bb9950303a84, type: 3}
+    previousVolume: 0
     volume: 0.8
     pitch: 1
     source: {fileID: 0}
     loop: 0
   - name: Click
     clip: {fileID: 8300000, guid: 162d6e6ad2e63a24597fca974d325139, type: 3}
+    previousVolume: 0
     volume: 0.5
+    pitch: 1
+    source: {fileID: 0}
+    loop: 0
+  - name: Collect
+    clip: {fileID: 8300000, guid: a00886905dabd4a40830352c6d0ca416, type: 3}
+    previousVolume: 0
+    volume: 0.8
     pitch: 1
     source: {fileID: 0}
     loop: 0

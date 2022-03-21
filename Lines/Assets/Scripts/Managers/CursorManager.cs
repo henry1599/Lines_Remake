@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
+    public static CursorManager Instance {get; set;}
     private float orthoOrg;
     private float orthoCurr;
     private Vector3 scaleOrg;
@@ -12,7 +13,15 @@ public class CursorManager : MonoBehaviour
     public GameObject clickEffect;
     void Awake() 
     {
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(this);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         Cursor.visible = false;    
     }
     void Start()

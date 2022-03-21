@@ -10,6 +10,7 @@ public class HowToPlayDisplay : MonoBehaviour
     private const string diagonalBallMessage = "Can move diagonally and cannot overlap with others";
     private const string bombBallMessage = "Like the normal ball but explore when stop moving";
     [SerializeField] private TMP_Text message;
+    [SerializeField] private GameObject infoField;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,9 +39,11 @@ public class HowToPlayDisplay : MonoBehaviour
                 message.text = bombBallMessage;
                 break;
         }
+        infoField.SetActive(true);
     }
     void HandleExit()
     {
         message.text = "";
+        infoField.SetActive(false);
     }
 }
